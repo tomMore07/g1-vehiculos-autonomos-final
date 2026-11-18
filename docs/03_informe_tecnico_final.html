@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Informe T��cnico Final - Grupo 1</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="estilo.css" />
+</head>
+<body>
+<div class="portada">
+<div class="sub">
+UNIVERSIDAD SERGIO ARBOLEDA · ESCUELA DE CIENCIAS EXACTAS E INGENIERÍA ·
+ICCIA
+</div>
+<h1 id="informe-técnico-final-de-ingeniería">Informe Técnico Final de
+Ingeniería</h1>
+<div class="sub">
+Proyecto Final Integrador · Paradigmas de Programación (SIST0176)
+</div>
+<p><strong>Grupo 1:</strong> Detección de anomalías e inferencia en
+tiempo real para vehículos autónomos<br> <strong>Integrantes:</strong>
+Sara Valentina Díaz Rojas · Tomás Felipe Morera Pérez · Cristhian
+Santiago Pinilla Vega<br> <strong>Fecha:</strong> noviembre de 2026</p>
+</div>
+<h2 id="resumen">1. Resumen</h2>
+<p>Se construyó una plataforma a bordo de un vehículo autónomo que
+filtra nubes de puntos LIDAR, detecta anomalías en la telemetría y
+decide un frenado de emergencia. El sistema integra tres módulos, cada
+uno en el paradigma que mejor explota su tarea: <strong>C++17 con
+OpenMP</strong> (imperativo), <strong>Java 17</strong> (orientado a
+objetos) y <strong>Python 3.10</strong> (funcional). Los módulos son
+procesos independientes que se comunican por JSON; Java los consume a
+través del patrón Adapter.</p>
+<p>Este informe recoge la versión final tras la revisión del avance
+parcial: se simplificó el diseño, se paralelizó la etapa dominante del
+kernel, se eliminaron las estructuras mutables del módulo funcional y se
+corrigió el aliasing del historial en Java.</p>
+<h2 id="ajustes-realizados-tras-la-retroalimentación">2. Ajustes
+realizados tras la retroalimentación</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Observación</th>
+<th>Cambio realizado</th>
+<th>Dónde verlo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Reducir las clases no esenciales</td>
+<td>El módulo Java pasó de 17 a <strong>13 clases</strong>. Se
+eliminaron <code>EstadoVehiculo</code>, <code>ResultadoFrenado</code>,
+<code>JsonPlano</code> y <code>PercepcionException</code>.</td>
+<td><code>java/src/</code>,
+<code>docs/01_arquitectura_uml.pdf</code></td>
+</tr>
+<tr class="even">
+<td>El diagrama de flujo de datos era muy básico</td>
+<td>Se rehízo como <strong>DFD formal (Yourdon–DeMarco)</strong> con
+entidades externas, procesos numerados, almacenes de datos, flujos
+rotulados, niveles 0 y 1 y diccionario de datos. Se agregó un diagrama
+de secuencia. Todo en Mermaid.</td>
+<td><code>docs/02_arquitectura_uml.md</code> §5–6</td>
+</tr>
+<tr class="odd">
+<td>Python usaba <code>deque.append</code> (estructura mutable)</td>
+<td>Las ventanas se definen como un <em>scan</em> puro con
+<code>itertools.accumulate</code>: cada ventana es una tupla nueva, sin
+mutación. Una prueba verifica que el núcleo no contenga estructuras
+mutables.</td>
+<td><code>python/pipeline.py</code>, <code>test_pipeline.py</code></td>
+</tr>
+<tr class="even">
+<td><code>std::sort</code> secuencial limitaba el speedup (Amdahl ≈
+1.2×)</td>
+<td>Ordenamiento <strong>por bloques en paralelo + fusión</strong>, y
+compactación paralela con suma de prefijos. Resultado idéntico al
+secuencial con 1, 2, 3, 4 y 8 hilos.</td>
+<td><code>cpp/lidar_kernel.cpp</code> (<code>sort_keys</code>, etapa
+2)</td>
+</tr>
+<tr class="odd">
+<td><code>unmodifiableList</code> entrega una vista “en vivo” (riesgo de
+<code>ConcurrentModificationException</code>)</td>
+<td><code>getHistorial()</code> y <code>getBitacora()</code> devuelven
+<strong><code>List.copyOf(...)</code></strong>, una instantánea
+inmutable. Pruebas del fallo original y de la corrección.</td>
+<td><code>MotorDecision.java</code>, <code>ActuadorFrenado.java</code>,
+<code>Pruebas.java</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="arquitectura-de-dominio">3. Arquitectura de dominio</h2>
+<p>El detalle (diagrama de clases UML, DFD, patrones y SOLID) está en
+<code>docs/01_arquitectura_uml.pdf</code>. En resumen:</p>
+<ul>
+<li><strong>Template Method:</strong>
+<code>ActuadorFrenado.ejecutarSecuenciaFrenado()</code> es
+<code>final</code> y fija el orden verificar → aplicar → registrar;
+<code>FrenoHidraulico</code> y <code>FrenoRegenerativo</code> aportan
+los pasos variables.</li>
+<li><strong>Strategy:</strong> <code>EstrategiaEvaluacionRiesgo</code>
+con <code>RiesgoPorDistancia</code> y
+<code>RiesgoPorTiempoColision</code>, intercambiables en ejecución.</li>
+<li><strong>Adapter / DIP:</strong> <code>AdaptadorKernelCpp</code>
+implementa <code>ProveedorPercepcion</code>; <code>MotorDecision</code>
+nunca depende de C++ ni de Python.</li>
+<li><strong>Encapsulamiento:</strong> estado privado,
+<code>record</code> inmutables con invariantes validados, sin fuga de
+referencias (instantáneas con <code>List.copyOf</code>) y métodos
+<code>synchronized</code> para uso concurrente.</li>
+</ul>
+<h2 id="implementación-por-paradigma">4. Implementación por
+paradigma</h2>
+<h3 id="imperativo-kernel-c-cpp">4.1 Imperativo: kernel C++
+(<code>cpp/</code>)</h3>
+<p>La nube de puntos se almacena como <strong>Structure of
+Arrays</strong> (<code>x[]</code>, <code>y[]</code>, <code>z[]</code>,
+<code>intensidad[]</code>) en memoria contigua: cada bucle recorre solo
+los campos que necesita y aprovecha la caché. El kernel tiene siete
+etapas:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>Etapa</th>
+<th>Paralelización</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Máscara de suelo y alcance</td>
+<td><code>#pragma omp parallel for</code></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Compactación de índices</td>
+<td>Cada hilo cuenta en su tramo; un solo hilo calcula los
+desplazamientos (suma de prefijos, <code>omp single</code>); cada hilo
+escribe en su zona. Orden idéntico al secuencial.</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Clave de vóxel de 63 bits (21 bits por eje)</td>
+<td><code>parallel for</code></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Ordenamiento por (clave, índice)</td>
+<td>Bloques ordenados en paralelo con <code>std::sort</code> + fusión
+por rondas con <code>std::inplace_merge</code></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Segmentación en vóxeles y filtro de ruido</td>
+<td>Secuencial (≈ 2 % del tiempo)</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Centroides por vóxel</td>
+<td><code>parallel for</code> (cada hilo escribe celdas distintas)</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Obstáculo más cercano en el corredor</td>
+<td><code>parallel for</code> con <code>reduction(min:best)</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Memoria sin inicializar:</strong> los arreglos grandes
+(<code>mask</code>, <code>kept</code>, <code>keys</code>) se reservan
+con <code>unique_ptr&lt;T[]&gt;(new T[n])</code>, sin rellenarlos de
+ceros. Un <code>std::vector</code> los rellena de forma secuencial (solo
+<code>keys</code> cuesta ≈ 6.6 ms en un solo hilo, medido con una prueba
+aislada), tiempo que no se puede paralelizar; sin relleno, la primera
+escritura ocurre dentro del bucle paralelo y cada hilo “toca” sus
+propias páginas.</p>
+<p><strong>Ausencia de condiciones de carrera:</strong> cada iteración o
+cada hilo escribe en posiciones exclusivas (<code>mask[i]</code>,
+<code>keys[k]</code>, <code>filtered.x[j]</code>,
+<code>kept[pos++]</code> con <code>pos</code> privado por hilo y rangos
+disjuntos); el único valor compartido, el mínimo, usa
+<code>reduction</code>. En las fusiones, cada par de bloques es un rango
+disjunto.</p>
+<p><strong>Determinismo:</strong> como cada elemento ordenado es único
+(la clave se desempata por índice), cualquier algoritmo de ordenamiento
+produce la misma permutación. El programa compara bit a bit el resultado
+secuencial y el paralelo y devuelve error si difieren
+(<code>make test-cpp</code>).</p>
+<h3 id="orientado-a-objetos-motor-de-decisión-java">4.2 Orientado a
+objetos: motor de decisión (<code>java/</code>)</h3>
+<p>13 clases en 5 paquetes (<code>dominio</code>, <code>riesgo</code>,
+<code>actuadores</code>, <code>percepcion</code>, <code>decision</code>)
+más la clase <code>Main</code> de demostración. Puntos clave:</p>
+<ul>
+<li><strong>Invariantes protegidos:</strong> un <code>Obstaculo</code>
+con distancia negativa no puede existir; el constructor compacto del
+<code>record</code> lo rechaza.</li>
+<li><strong>Instantáneas en lugar de vistas:</strong>
+<code>getHistorial()</code> devuelve
+<code>List.copyOf(historial)</code>. Con
+<code>Collections.unmodifiableList</code> el receptor vería los cambios
+posteriores del motor y podría recibir
+<code>ConcurrentModificationException</code> al recorrer la lista; con
+la copia, la lista recibida es estática. Cuesta O(E) por llamada, a
+cambio de seguridad.</li>
+<li><strong>Concurrencia:</strong> los métodos públicos de
+<code>MotorDecision</code> y <code>ActuadorFrenado</code> son
+<code>synchronized</code>; los campos que escribe un hilo y lee otro
+(<code>presionLineaBar</code>, <code>torqueNm</code>) son
+<code>volatile</code>.</li>
+</ul>
+<h3 id="funcional-pipeline-python-pythonpipeline.py">4.3 Funcional:
+pipeline Python (<code>python/pipeline.py</code>)</h3>
+<ul>
+<li><strong>Sin estructuras mutables.</strong> Las ventanas deslizantes
+se definen como un <em>scan</em>:
+<code>accumulate(stream, lambda w, x: (w + (x,))[-size:], initial=())</code>.
+Cada ventana es una tupla nueva calculada a partir de la anterior; nada
+se modifica.</li>
+<li><strong>Funciones de orden superior:</strong> <code>map</code>,
+<code>filter</code> y <code>reduce</code> (media y varianza con dos
+<code>reduce</code>).</li>
+<li><strong>Evaluación perezosa:</strong> todo opera sobre iteradores;
+funciona sobre el generador infinito <code>source_stream</code>.</li>
+<li><strong>Currificación:</strong> el decorador <code>@curry</code>
+permite <code>detect_anomalies(4.0)(30)(flujo)</code>.</li>
+<li><strong>Functional Core, Imperative Shell:</strong> el núcleo
+(<code>mean_var</code>, <code>sliding_windows</code>,
+<code>moving_average</code>, <code>detect_anomalies</code>) es puro; los
+efectos (azar en <code>source_stream</code>, impresión en
+<code>main</code>) quedan en la cáscara.</li>
+</ul>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Función</th>
+<th>¿Pura?</th>
+<th>Efecto aislado</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mean_var</code>, <code>sliding_windows</code>,
+<code>moving_average</code>, <code>detect_anomalies</code>,
+<code>anomaly_to_json</code></td>
+<td>Sí</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td><code>source_stream</code></td>
+<td>No</td>
+<td>Generador de números aleatorios (cáscara)</td>
+</tr>
+<tr class="odd">
+<td><code>main</code></td>
+<td>No</td>
+<td>Lectura de argumentos e impresión (cáscara)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="análisis-de-complejidad-big-o">5. Análisis de complejidad (Big
+O)</h2>
+<h3 id="definiciones-y-modelo-de-costo">5.1 Definiciones y modelo de
+costo</h3>
+<p><strong>Definición.</strong> f(N) ∈ O(g(N)) ⇔ ∃ c &gt; 0, ∃ N₀ tales
+que ∀ N ≥ N₀: f(N) ≤ c·g(N). f ∈ Θ(g) ⇔ f ∈ O(g) y g ∈ O(f).</p>
+<p><strong>Notación.</strong> N = puntos de entrada; M ≤ N = puntos que
+sobreviven al filtro de suelo y alcance; V = vóxeles válidos (V ≤ M/3
+porque <code>min_pts_voxel = 3</code>); p = número de hilos (constante).
+Operaciones aritméticas, comparaciones y accesos a
+<code>std::vector</code> cuestan Θ(1). Se cuenta el peor caso salvo que
+se indique lo contrario.</p>
+<h3 id="tiempo-secuencial">5.2 Tiempo secuencial</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Etapa</th>
+<th>Costo</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1 Máscara</td>
+<td>k₁·N</td>
+<td>Un bucle de cuerpo constante sobre N puntos.</td>
+</tr>
+<tr class="even">
+<td>2 Compactación</td>
+<td>k₂·N</td>
+<td>Dos pasadas sobre N (contar y escribir).</td>
+</tr>
+<tr class="odd">
+<td>3 Claves</td>
+<td>k₃·M</td>
+<td>Un bucle sobre los M puntos conservados.</td>
+</tr>
+<tr class="even">
+<td>4 Ordenamiento</td>
+<td>≤ k₄·M·log₂M</td>
+<td>La norma C++11 exige O(M log M) comparaciones en el peor caso
+(introsort).</td>
+</tr>
+<tr class="odd">
+<td>5 Segmentación</td>
+<td>≤ k₅·M</td>
+<td>El bucle interno avanza <code>e</code> y el externo asigna
+<code>s = e</code>: cada posición se visita una vez.</td>
+</tr>
+<tr class="even">
+<td>6 Centroides</td>
+<td>≤ k₆·M + k₆′·V</td>
+<td>Los rangos de vóxeles son disjuntos: Σ(fin − inicio) ≤ M.</td>
+</tr>
+<tr class="odd">
+<td>7 Mínimo</td>
+<td>k₇·V</td>
+<td>Un bucle sobre V centroides.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Teorema 1.</strong> T(N) ∈ O(N log N).</p>
+<p><em>Demostración.</em> Sumando las etapas, T(N) ≤ (k₁+k₂)·N +
+(k₃+k₅+k₆)·M + (k₆′+k₇)·V + k₄·M·log₂M. Para N ≥ 2: (i) V ≤ M ≤ N; (ii)
+log₂N ≥ 1, luego N ≤ N·log₂N; (iii) h(x) = x·log₂x es creciente para x ≥
+1 y M ≤ N, luego M·log₂M ≤ N·log₂N. Aplicando (i)–(iii) a cada término,
+T(N) ≤ c·N·log₂N con c = k₁+k₂+k₃+k₄+k₅+k₆+k₆′+k₇ y N₀ = 2. ∎</p>
+<p><strong>Proposición 2 (cota ajustada).</strong> Si M ≥ α·N con α ∈
+(0,1], entonces T(N) ∈ Θ(N log N).</p>
+<p><em>Demostración.</em> La cota superior es el Teorema 1. Para la
+inferior, ordenar M claves distintas requiere Ω(M log M) comparaciones
+en el peor caso, y M·log₂M ≥ αN·(log₂N + log₂α) ≥ (α/2)·N·log₂N siempre
+que log₂N ≥ 2·log₂(1/α), es decir N ≥ 1/α². ∎ (En los datos sintéticos
+M/N ≈ 0.55, luego N₀ ≈ 4.)</p>
+<h3 id="espacio">5.3 Espacio</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Estructura</th>
+<th>Bytes</th>
+<th>Cota</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mask</code> (<code>uint8_t</code>)</td>
+<td>N</td>
+<td>Θ(N)</td>
+</tr>
+<tr class="even">
+<td><code>kept</code> (<code>uint32_t</code>)</td>
+<td>4·M</td>
+<td>Θ(M)</td>
+</tr>
+<tr class="odd">
+<td><code>keys</code> (<code>pair&lt;uint64_t,uint32_t&gt;</code>, 16 B
+con relleno)</td>
+<td>16·M</td>
+<td>Θ(M)</td>
+</tr>
+<tr class="even">
+<td>Búfer temporal de <code>inplace_merge</code> (modo paralelo)</td>
+<td>≤ 8·M</td>
+<td>O(M)</td>
+</tr>
+<tr class="odd">
+<td><code>runs</code> (dos <code>int64_t</code>)</td>
+<td>≤ 16·V</td>
+<td>O(V)</td>
+</tr>
+<tr class="even">
+<td>Salida (4 arreglos <code>float</code> de V)</td>
+<td>16·V</td>
+<td>Θ(V)</td>
+</tr>
+<tr class="odd">
+<td>Contadores por hilo</td>
+<td>O(p)</td>
+<td>O(1)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Teorema 3.</strong> El espacio adicional es S(N) ∈ Θ(N).</p>
+<p><em>Demostración.</em> S(N) ≤ N + 4M + 16M + 8M + 32V + O(p). Con V ≤
+M/3 ≤ N/3: S(N) ≤ N + 28N + 32N/3 + O(p) &lt; 40·N + O(p), luego S ∈
+O(N). Además S(N) ≥ N por <code>mask</code>, luego S ∈ Ω(N). ∎</p>
+<h3 id="tiempo-paralelo-trabajo-y-camino-crítico">5.4 Tiempo paralelo
+(trabajo y camino crítico)</h3>
+<p>El ordenamiento paralelo divide las M claves en p bloques, ordena
+cada uno con <code>std::sort</code> y los fusiona en log₂p rondas.</p>
+<p><strong>Teorema 4.</strong> Con p hilos, el trabajo total sigue
+siendo O(N log N) y el tiempo ideal es Tₚ(N) = O( (N log N)/p + N ).</p>
+<p><em>Demostración.</em> <em>Trabajo:</em> ordenar los p bloques cuesta
+p·(M/p)·log₂(M/p) = M·log₂(M/p); las log₂p rondas de fusión cuestan M
+cada una, es decir M·log₂p. La suma es M·log₂M: no hay trabajo
+asintótico extra. <em>Camino crítico:</em> las etapas 1, 2, 3, 6 y 7 se
+reparten entre p hilos (O(N/p)); los bloques se ordenan en paralelo en
+O((M/p)·log(M/p)); en la ronda r hay p/2ʳ fusiones independientes, cada
+una de tamaño 2ʳ·M/p y secuencial, así que la ronda cuesta O(2ʳ·M/p), y
+Σ(r = 1 … log₂p) 2ʳ·M/p = (2p − 2)·M/p &lt; 2M = O(N). La segmentación
+(etapa 5) es O(M). Sumando se obtiene Tₚ = O(N/p + (N/p)·log N + N).
+∎</p>
+<p><strong>Corolario (speedup asintótico).</strong> Para p fijo, Sₚ =
+T₁/Tₚ ≥ c₁·N·log N / (c₂·N·log N / p + c₃·N) = c₁ / (c₂/p + c₃/log N) →
+p·c₁/c₂ cuando N → ∞. La parte que sigue siendo secuencial en esencia
+(la última fusión, Θ(N)) pesa una fracción O(1/log N) del trabajo, por
+lo que <strong>la eficiencia mejora al crecer N</strong>. Para N = 2·10⁶
+(log₂N ≈ 21) esa fracción aún es apreciable, y de ahí el techo práctico
+que se estima en §6.</p>
+<p><strong>Comparación con el diseño anterior.</strong> Con
+<code>std::sort</code> secuencial, la fracción secuencial era f ≈ 0.81 y
+la ley de Amdahl acotaba el speedup a 1/f ≈ 1.24× sin importar p. Con el
+ordenamiento por bloques, la parte secuencial ya no es el ordenamiento
+completo sino la fusión final (≈ 11 % del tiempo secuencial) más la
+segmentación (≈ 2 %).</p>
+<h3 id="pipeline-funcional-y-módulo-java">5.5 Pipeline funcional y
+módulo Java</h3>
+<p>Sea W el tamaño de ventana y N el número de lecturas.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Función</th>
+<th>Tiempo</th>
+<th>Espacio</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>mean_var</code></td>
+<td>Θ(W)</td>
+<td>O(1)</td>
+</tr>
+<tr class="even">
+<td><code>sliding_windows</code>, <code>moving_average</code>,
+<code>detect_anomalies</code></td>
+<td>Θ(N·W)</td>
+<td>O(W)</td>
+</tr>
+</tbody>
+</table>
+<p>Cada ventana nueva <code>(w + (x,))[-size:]</code> cuesta Θ(W) (dos
+tuplas de tamaño ≈ W). Por la evaluación perezosa el espacio no depende
+de N, lo que permite el flujo infinito. En Java:
+<code>evaluarYActuar</code> es O(1) amortizado;
+<code>getHistorial()</code> es <strong>O(E)</strong> (copia de E
+eventos), el costo de la instantánea inmutable;
+<code>AdaptadorKernelCpp.leerCampo</code> es O(L) en la longitud L de la
+línea.</p>
+<h2 id="benchmarks-de-rendimiento">6. Benchmarks de rendimiento</h2>
+<h3 id="metodología">6.1 Metodología</h3>
+<p>Medición con <code>make benchmark</code>
+(<code>scripts/benchmark.sh</code>): N = 2·10⁶ puntos, nube sintética
+con semilla fija, hilos ∈ {1, 2, 4, 8}, compilación con
+<code>g++ -O3 -fopenmp</code>. Para que la comparación sea justa, cada
+ejecución del programa hace <strong>(1) una corrida de calentamiento de
+cada modo, descartada, y (2) tres repeticiones alternadas
+secuencial/paralelo, tomando el mínimo de cada modo</strong>; el script
+repite la ejecución 3 veces y conserva el mínimo. Cada corrida verifica
+que el resultado paralelo sea idéntico al secuencial. Speedup = tiempo
+secuencial / tiempo paralelo; eficiencia = speedup / hilos.</p>
+<p><strong>Lección sobre el método (sesgo detectado).</strong> Una
+primera versión medía una sola corrida de cada modo, la secuencial
+primero. Al probar con <strong>1 hilo</strong> el modo “paralelo” salió
+1.32× más rápido que el secuencial, lo cual es imposible: la segunda
+corrida reutilizaba la memoria que la primera ya había reservado y se
+ahorraba los fallos de página. Con el calentamiento y las repeticiones,
+la prueba con 1 hilo da 1.00×, que es lo esperado. Toda medición debe
+pasar esa prueba de cordura (1 hilo ⇒ speedup ≈ 1) antes de
+reportarse.</p>
+<h3
+id="línea-base-diseño-anterior-stdsort-secuencial-medido-por-el-grupo">6.2
+Línea base (diseño anterior, <code>std::sort</code> secuencial) — medido
+por el grupo</h3>
+<p>N = 2·10⁶, 4 hilos, en el computador del grupo:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Speedup real</td>
+<td><strong>1.06×</strong></td>
+</tr>
+<tr class="even">
+<td>Peso del ordenamiento</td>
+<td>70.3 % del tiempo</td>
+</tr>
+<tr class="odd">
+<td>Fracción secuencial f</td>
+<td>0.807</td>
+</tr>
+<tr class="even">
+<td>Cota de Amdahl (p = 4 / p → ∞)</td>
+<td>1.17× / 1.24×</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="b-primera-medición-con-el-ordenamiento-paralelo-computador-del-grupo-4-hilos">6.2b
+Primera medición con el ordenamiento paralelo (computador del grupo, 4
+hilos)</h3>
+<p>Medición con la versión intermedia, <strong>antes de corregir el
+método</strong> (una sola corrida por modo, sin calentamiento). Se
+conserva porque muestra qué etapas aceleran y cuáles no:</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Etapa</th>
+<th style="text-align: right;">Secuencial (ms)</th>
+<th style="text-align: right;">Paralelo (ms)</th>
+<th style="text-align: right;">Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1 Máscara</td>
+<td style="text-align: right;">13.47</td>
+<td style="text-align: right;">19.21</td>
+<td style="text-align: right;">0.70×</td>
+</tr>
+<tr class="even">
+<td>2 Compactación</td>
+<td style="text-align: right;">12.23</td>
+<td style="text-align: right;">5.96</td>
+<td style="text-align: right;">2.05×</td>
+</tr>
+<tr class="odd">
+<td>3 Claves de vóxel</td>
+<td style="text-align: right;">14.90</td>
+<td style="text-align: right;">17.91</td>
+<td style="text-align: right;">0.83×</td>
+</tr>
+<tr class="even">
+<td>4 Ordenamiento (bloques 29.50 + fusión 16.27)</td>
+<td style="text-align: right;">110.94</td>
+<td style="text-align: right;">45.78</td>
+<td style="text-align: right;">2.42×</td>
+</tr>
+<tr class="odd">
+<td>5 Segmentación</td>
+<td style="text-align: right;">3.68</td>
+<td style="text-align: right;">3.55</td>
+<td style="text-align: right;">1.04×</td>
+</tr>
+<tr class="even">
+<td>6 Centroides</td>
+<td style="text-align: right;">2.94</td>
+<td style="text-align: right;">2.02</td>
+<td style="text-align: right;">1.46×</td>
+</tr>
+<tr class="odd">
+<td>7 Mínimo</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">1.37×</td>
+</tr>
+<tr class="even">
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>158.18</strong></td>
+<td style="text-align: right;"><strong>94.43</strong></td>
+<td style="text-align: right;"><strong>1.68×</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Lectura: (1) el ordenamiento, que antes era el techo (1.06× en
+total), ahora se acelera 2.42× y su tiempo paralelo (45.78 ms)
+<strong>coincide con la estimación del modelo</strong> de §6.5 (≈ 45.7
+ms: 25.6 ms de bloques + 20.1 ms de fusión crítica); la teoría del
+Teorema 4 se confirma. (2) El modelo predijo 63.9 ms en total y se
+midieron 94.4 ms: la diferencia está casi toda en las etapas 1 y 3, que
+<strong>no aceleraron</strong>. Dos causas identificadas: el relleno
+secuencial con ceros de los arreglos grandes y la creación de los hilos
+de OpenMP dentro de la primera región paralela; ambas se corrigieron
+(memoria sin inicializar y calentamiento). (3) Este 1.68× pudo estar
+inflado por el sesgo descrito en §6.1, por lo que <strong>no debe
+citarse como resultado final</strong>: la medición definitiva es la de
+§6.6.</p>
+<h3 id="crecimiento-n-log-n-versión-secuencial">6.3 Crecimiento N log N
+(versión secuencial)</h3>
+<p>Mínimo de 3 ejecuciones, 1 hilo. Si T ≈ c·N·log₂N el cociente
+T/(N·log₂N) debe ser casi constante.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">N</th>
+<th style="text-align: right;">T (s)</th>
+<th style="text-align: right;">T/(N·log₂N) (ns)</th>
+<th style="text-align: right;">T/N (ns/punto)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">250 000</td>
+<td style="text-align: right;">0.0175</td>
+<td style="text-align: right;">3.90</td>
+<td style="text-align: right;">70.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">500 000</td>
+<td style="text-align: right;">0.0331</td>
+<td style="text-align: right;">3.50</td>
+<td style="text-align: right;">66.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1 000 000</td>
+<td style="text-align: right;">0.0734</td>
+<td style="text-align: right;">3.68</td>
+<td style="text-align: right;">73.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2 000 000</td>
+<td style="text-align: right;">0.1458</td>
+<td style="text-align: right;">3.48</td>
+<td style="text-align: right;">72.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4 000 000</td>
+<td style="text-align: right;">0.3202</td>
+<td style="text-align: right;">3.65</td>
+<td style="text-align: right;">80.0</td>
+</tr>
+</tbody>
+</table>
+<p>El cociente se mantiene entre 3.5 y 3.9 ns (variación ≈ 12 %)
+mientras N crece 16 veces; el tiempo por punto pasa de 70 a 80 ns,
+coherente con N log N y no con N² (que lo habría multiplicado por 16).
+<em>Nota:</em> estas mediciones provienen de un entorno compartido de un
+solo núcleo, con variación de ±20 % entre ejecuciones; se usan para
+verificar la forma de la curva, no valores absolutos.</p>
+<h3 id="tiempo-por-etapa-tras-la-paralelización">6.4 Tiempo por etapa
+tras la paralelización</h3>
+<p>Ejecución con <code>--threads 4 --stages</code> en un entorno de
+<strong>un solo núcleo</strong> (los hilos se ejecutan en serie, así que
+no puede haber speedup; la tabla sirve para ver la distribución del
+costo):</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Etapa</th>
+<th style="text-align: right;">Secuencial (ms)</th>
+<th style="text-align: right;">% del total</th>
+<th style="text-align: right;">Paralelo, 4 hilos en 1 núcleo (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1 Máscara</td>
+<td style="text-align: right;">16.59</td>
+<td style="text-align: right;">9.0</td>
+<td style="text-align: right;">13.85</td>
+</tr>
+<tr class="even">
+<td>2 Compactación</td>
+<td style="text-align: right;">15.55</td>
+<td style="text-align: right;">8.4</td>
+<td style="text-align: right;">12.04</td>
+</tr>
+<tr class="odd">
+<td>3 Claves de vóxel</td>
+<td style="text-align: right;">21.83</td>
+<td style="text-align: right;">11.8</td>
+<td style="text-align: right;">17.18</td>
+</tr>
+<tr class="even">
+<td>4 Ordenamiento</td>
+<td style="text-align: right;">124.21</td>
+<td style="text-align: right;">67.3</td>
+<td style="text-align: right;">129.18 (bloques 102.44 + fusión
+26.74)</td>
+</tr>
+<tr class="odd">
+<td>5 Segmentación</td>
+<td style="text-align: right;">4.10</td>
+<td style="text-align: right;">2.2</td>
+<td style="text-align: right;">3.03</td>
+</tr>
+<tr class="even">
+<td>6 Centroides</td>
+<td style="text-align: right;">2.35</td>
+<td style="text-align: right;">1.3</td>
+<td style="text-align: right;">3.40</td>
+</tr>
+<tr class="odd">
+<td>7 Mínimo</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: right;">0.04</td>
+</tr>
+<tr class="even">
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>184.64</strong></td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">178.73</td>
+</tr>
+</tbody>
+</table>
+<p>El resultado paralelo coincidió con el secuencial en todas las
+ejecuciones (1, 2, 3, 4 y 8 hilos).</p>
+<h3 id="estimación-por-modelo-no-es-una-medición">6.5 Estimación por
+modelo (no es una medición)</h3>
+<p>Con los tiempos de §6.4, suponiendo que las etapas paralelas escalan
+linealmente con p, que cada ronda de fusión cuesta lo mismo (≈ fusión
+total / nº de rondas) y que no hay límite de ancho de banda de
+memoria:</p>
+<table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">p</th>
+<th style="text-align: right;">Tiempo paralelo estimado (ms)</th>
+<th style="text-align: right;">Speedup estimado</th>
+<th>Parte secuencial (fusión crítica + segmentación)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">63.9</td>
+<td style="text-align: right;">≈ 2.9×</td>
+<td>20.1 + 4.1 ms</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">40.3</td>
+<td style="text-align: right;">≈ 4.6×</td>
+<td>18.1 + 4.1 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Frente al techo de ≈ 1.24× del diseño anterior, el modelo predice una
+mejora de unas 2.3 a 3.7 veces. El speedup real será menor por el ancho
+de banda de memoria y por la sobrecarga de los hilos; <strong>debe
+confirmarse con <code>make benchmark</code> en hardware
+multinúcleo</strong>.</p>
+<h3 id="resultados-medidos-en-hardware-multinúcleo-completar">6.6
+Resultados medidos en hardware multinúcleo (completar)</h3>
+<p>Ejecute <code>make benchmark</code> en un computador con ≥ 4 núcleos
+físicos (con <code>nproc</code> ≥ 4 dentro de WSL) y pegue aquí la tabla
+que imprime, <strong>con la versión final del código</strong>. Verifique
+que la fila de 1 hilo dé ≈ 1.00× (prueba de cordura). Indique modelo de
+CPU, número de núcleos y sistema operativo.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Hilos</th>
+<th style="text-align: right;">Secuencial (s)</th>
+<th style="text-align: right;">Paralelo (s)</th>
+<th style="text-align: right;">Speedup</th>
+<th style="text-align: right;">Eficiencia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+<td style="text-align: right;">___</td>
+</tr>
+</tbody>
+</table>
+<h2 id="control-de-side-effects-y-thread-safety">7. Control de side
+effects y thread safety</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Módulo</th>
+<th>Mecanismo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Python</td>
+<td>Functional Core / Imperative Shell: núcleo puro sin estructuras
+mutables; efectos solo en <code>source_stream</code> y
+<code>main</code>.</td>
+</tr>
+<tr class="even">
+<td>C++</td>
+<td>Escrituras en posiciones exclusivas por hilo;
+<code>reduction(min:best)</code>; <code>pos</code> privado en la
+compactación; resultado idéntico al secuencial verificado en cada
+ejecución.</td>
+</tr>
+<tr class="odd">
+<td>Java</td>
+<td><code>record</code> inmutables; estado privado; instantáneas
+<code>List.copyOf</code>; <code>synchronized</code> en
+<code>MotorDecision</code> y <code>ActuadorFrenado</code>;
+<code>volatile</code> en campos leídos entre hilos.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pruebas">8. Pruebas</h2>
+<table>
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Módulo</th>
+<th style="text-align: right;">Pruebas</th>
+<th>Qué verifican</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>C++</td>
+<td style="text-align: right;">5</td>
+<td>Resultado paralelo idéntico al secuencial con 1, 2, 3, 4 y 8 hilos
+(<code>make test-cpp</code>).</td>
+</tr>
+<tr class="even">
+<td>Python</td>
+<td style="text-align: right;">11</td>
+<td>Pureza, no mutación de entradas, ventanas como tuplas, flujo
+infinito perezoso, ausencia de estructuras mutables en el núcleo,
+contrato JSON.</td>
+</tr>
+<tr class="odd">
+<td>Java</td>
+<td style="text-align: right;">26</td>
+<td>Inmutabilidad y aliasing (8): campos <code>final</code>,
+invariantes, historial inmutable, <strong>instantánea estática</strong>,
+recorrido sin <code>ConcurrentModificationException</code>, demostración
+del fallo de la vista, bitácora, dependencias nulas. Template Method
+(4). LSP (2). Strategy y motor (5). <strong>Thread safety (2):</strong>
+8 hilos × 250 eventos y 8 hilos × 100 frenados. Contratos JSON (3).
+Integración real C++ + Python + Java (2).</td>
+</tr>
+</tbody>
+</table>
+<p>Se ejecutan con <code>make test</code>.</p>
+<h2 id="conclusiones-limitaciones-y-trabajo-futuro">9. Conclusiones,
+limitaciones y trabajo futuro</h2>
+<ul>
+<li>El diseño final cumple con los tres paradigmas y con un acoplamiento
+mínimo: cada módulo se prueba solo, y Java depende únicamente de la
+interfaz <code>ProveedorPercepcion</code>.</li>
+<li><strong>El hallazgo central de ingeniería</strong> fue medir antes
+de optimizar: la instrumentación por etapas mostró que el ordenamiento
+ocupaba ≈ 70 % del tiempo y limitaba el speedup a ≈ 1.2×; la
+paralelización de esa etapa es la mejora de mayor impacto.</li>
+<li><strong>Limitación:</strong> la última ronda de fusión sigue siendo
+secuencial (Θ(N)). Una fusión paralela por co-rangos (dividir los dos
+bloques con búsqueda binaria para que varios hilos fusionen en paralelo)
+eliminaría ese tramo; se descartó para mantener la complejidad del
+código acorde con un proyecto de curso.</li>
+<li><strong>Limitación:</strong> <code>getHistorial()</code> copia el
+historial en cada llamada (O(E)); es aceptable con pocos eventos, y para
+historiales muy grandes convendría un historial acotado.</li>
+<li><strong>Limitación:</strong> la comunicación por procesos externos
+añade latencia por llamada; JNI sería más rápido a costa de complejidad.
+Gracias al patrón Adapter, solo cambiaría
+<code>AdaptadorKernelCpp</code>.</li>
+<li><strong>Pendiente de validar:</strong> los resultados de §6.6 en
+hardware multinúcleo.</li>
+</ul>
+<h2 id="reproducibilidad">10. Reproducibilidad</h2>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span>                  <span class="co"># compila C++ y Java</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> test             <span class="co"># 5 verificaciones de C++, 11 pruebas Python, 26 pruebas Java</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> run-integracion  <span class="co"># ciclo completo C++ + Python + Java</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span> benchmark        <span class="co"># tabla de speedup (secuencial vs paralelo; 1, 2, 4, 8 hilos)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./cpp/lidar_kernel</span> <span class="at">--n</span> 2000000 <span class="at">--threads</span> 4 <span class="at">--stages</span>   <span class="co"># tiempo por etapa</span></span></code></pre></div>
+<p>Requisitos: g++ con OpenMP, JDK 17+, Python ≥ 3.10; en Windows,
+WSL.</p>
+</body>
+</html>
