@@ -1,0 +1,55 @@
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="estilo.css"></head><body>
+<div class="portada">
+<div class="sub">UNIVERSIDAD SERGIO ARBOLEDA · ESCUELA DE CIENCIAS EXACTAS E INGENIERÍA · ICCIA</div>
+<h1>Arquitectura y Especificación UML</h1>
+<div class="sub">Proyecto Final Integrador · Paradigmas de Programación (SIST0176)</div>
+<p><b>Grupo 1:</b> Detección de anomalías e inferencia en tiempo real para vehículos autónomos<br>
+<b>Integrantes:</b> Sara Valentina Díaz Rojas · Tomás Felipe Morera Pérez · Cristhian Santiago Pinilla Vega<br>
+<b>Fecha:</b> noviembre de 2026</p></div>
+
+<h2>1. Resumen de la arquitectura</h2>
+<table><tr><th>Módulo</th><th>Paradigma / lenguaje</th><th>Responsabilidad</th></tr>
+<tr><td>1 · Kernel LIDAR</td><td>Imperativo · C++17 + OpenMP</td><td>Filtrar suelo y ruido, reducir la nube a centroides de vóxel y hallar el obstáculo más cercano. O(N log N), con ordenamiento paralelo.</td></tr>
+<tr><td>2 · Motor de decisión</td><td>Orientado a objetos · Java 17</td><td>Evaluar riesgo (Strategy), ejecutar el frenado (Template Method) y mantener un historial encapsulado. <b>13 clases</b>.</td></tr>
+<tr><td>3 · Pipeline de telemetría</td><td>Funcional · Python 3.10+</td><td>Promedios móviles y detección perezosa de anomalías con funciones puras, sin estructuras mutables.</td></tr></table>
+<p>El módulo Java se simplificó de 17 a 13 clases: se eliminaron <code>EstadoVehiculo</code>, <code>ResultadoFrenado</code>, <code>JsonPlano</code> y <code>PercepcionException</code>, que no eran esenciales (los datos que aportaban viven ahora en <code>Obstaculo</code>, en el retorno <code>boolean</code> del frenado, en un método estático del adaptador y en <code>IllegalStateException</code>).</p>
+
+<h2 class="pb">2. Diagrama de clases UML (módulo Java)</h2>
+<p>Visibilidades: <code>+</code> público, <code>-</code> privado, <code>#</code> protegido. Generalización (triángulo vacío, línea continua), realización (triángulo vacío, línea punteada), agregación (rombo vacío), composición (rombo lleno), asociación (flecha abierta) y dependencia (flecha abierta punteada). Colores: verde = Strategy, rojo = Template Method, amarillo = Adapter, lila = orquestador, gris = dominio inmutable.</p>
+<div class="fig"><img src="uml_clases.svg" style="width:100%"><br>Figura 1. Diagrama de clases. La versión Mermaid está en <code>02_arquitectura_uml.md</code>.</div>
+
+<h2 class="pb">3. Diagrama de flujo de datos (DFD, notación Yourdon–DeMarco)</h2>
+<p><b>Notación:</b> rectángulo = entidad externa (E) · círculo = proceso numerado · dos líneas paralelas = almacén de datos (D) · flecha rotulada = flujo de datos. Todo flujo entra o sale de un proceso; las entidades externas no acceden directamente a los almacenes.</p>
+<div class="fig"><img src="dfd_nivel0.svg" style="height:270px"><br>Figura 2. DFD nivel 0 (diagrama de contexto).</div>
+<div class="fig pb"><img src="dfd_nivel1.svg" style="height:590px"><br>Figura 3. DFD nivel 1: descomposición del proceso 0.</div>
+<h3 class="pb">Diccionario de datos</h3>
+<table><tr><th>Flujo</th><th>Contenido</th><th>Implementación</th></tr>
+<tr><td>nube de puntos</td><td>arreglos x, y, z, intensidad (float)</td><td><code>lidar::PointCloud</code> (C++, SoA)</td></tr>
+<tr><td>obstáculo más cercano</td><td>distancia en m (−1 si no hay)</td><td>JSON de <code>lidar_kernel --json</code> → <code>Obstaculo</code></td></tr>
+<tr><td>lecturas de telemetría</td><td>(t, valor)</td><td>generador infinito <code>source_stream</code> → <code>Reading</code></td></tr>
+<tr><td>anomalías</td><td>(t, valor, media, zscore)</td><td>JSON de <code>pipeline.py --json</code> → <code>Anomalia</code></td></tr>
+<tr><td>nivel de riesgo</td><td>BAJO · MEDIO · ALTO · CRITICO</td><td>enum <code>NivelRiesgo</code></td></tr>
+<tr><td>orden de frenado</td><td>presión en [0, 1]</td><td>parámetro de <code>ejecutarSecuenciaFrenado</code></td></tr>
+<tr><td>historial / bitácora</td><td>lista de eventos</td><td><code>List.copyOf(...)</code>: instantánea inmutable</td></tr></table>
+<p>Contratos JSON: C++ → Java: <code>{"n_in":100000,"n_voxels":89,"min_obstacle_dist":8.528,"emergency_brake":true}</code>; Python → Java (una por línea): <code>{"t": 97, "value": 13.483, "mean": 24.962, "zscore": -32.173}</code>.</p>
+
+<h2 class="pb">4. Patrones GoF y principios SOLID</h2>
+<table><tr><th>Patrón</th><th>Dónde</th><th>Justificación</th></tr>
+<tr><td>Template Method</td><td><code>ActuadorFrenado.ejecutarSecuenciaFrenado()</code> (<code>final</code>)</td><td>El orden verificar → aplicar → registrar es una regla de seguridad que ninguna subclase puede alterar. Las subclases solo implementan los pasos variables; <code>registrarEvento</code> es un <i>hook</i>.</td></tr>
+<tr><td>Strategy</td><td><code>EstrategiaEvaluacionRiesgo</code> y 2 implementaciones</td><td>La política de riesgo cambia en ejecución (<code>setEstrategia</code>) sin modificar <code>MotorDecision</code>.</td></tr>
+<tr><td>Adapter</td><td><code>AdaptadorKernelCpp</code> implementa <code>ProveedorPercepcion</code></td><td>Adapta procesos externos y JSON a la interfaz del dominio; si se migra a JNI solo cambia esta clase.</td></tr></table>
+<table><tr><th>Principio</th><th>Evidencia</th></tr>
+<tr><td>S · responsabilidad única</td><td><code>MotorDecision</code> solo orquesta; las estrategias solo evalúan; el adaptador solo traduce.</td></tr>
+<tr><td>O · abierto/cerrado</td><td>Un freno o una política nuevos son clases nuevas; no se modifica código existente.</td></tr>
+<tr><td>L · sustitución de Liskov</td><td>Cualquier <code>ActuadorFrenado</code> o estrategia sirve donde se espera el tipo base (pruebas LSP).</td></tr>
+<tr><td>I · segregación de interfaces</td><td>Interfaces mínimas de 1 y 2 métodos.</td></tr>
+<tr><td>D · inversión de dependencias</td><td><code>MotorDecision</code> depende solo de abstracciones (<code>EstrategiaEvaluacionRiesgo</code>, <code>ActuadorFrenado</code>, <code>ProveedorPercepcion</code>).</td></tr></table>
+
+<h2>5. Encapsulamiento y prevención de aliasing</h2>
+<table><tr><th>Regla</th><th>Cómo se cumple</th><th>Prueba</th></tr>
+<tr><td>Estado privado e inmutable</td><td>Campos <code>private</code>; <code>record</code> con campos <code>final</code> e invariantes validados en el constructor.</td><td>Reflexión sobre campos <code>final</code>; rechazo de valores inválidos.</td></tr>
+<tr><td>Sin fuga de referencias</td><td><code>getHistorial()</code> y <code>getBitacora()</code> devuelven <code>List.copyOf(...)</code>: una <b>instantánea inmutable</b>, no una vista.</td><td><code>add</code>/<code>clear</code> lanzan <code>UnsupportedOperationException</code>; los eventos nuevos no cambian la instantánea.</td></tr>
+<tr><td>Sin <code>ConcurrentModificationException</code></td><td>Como la instantánea es independiente de la lista interna, recorrerla mientras el motor agrega eventos es seguro.</td><td>Prueba de recorrido con inserciones simultáneas y demostración del fallo con una vista <code>unmodifiableList</code>.</td></tr>
+<tr><td>Seguridad entre hilos</td><td>Métodos públicos de <code>MotorDecision</code> y <code>ActuadorFrenado</code> son <code>synchronized</code>.</td><td>8 hilos × 250 operaciones: no se pierde ningún evento.</td></tr></table>
+<div class="nota"><b>Por qué no <code>Collections.unmodifiableList</code>:</b> devuelve una vista "en vivo" de la lista interna; quien la recibe no puede modificarla, pero ve cada cambio posterior del propietario y puede recibir <code>ConcurrentModificationException</code> al recorrerla. <code>List.copyOf</code> entrega una fotografía estática, con costo O(E) por llamada.</div>
+</body></html>
